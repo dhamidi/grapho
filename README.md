@@ -1,6 +1,6 @@
 # Description
 
-γράφο is Greek for "I write".  This piece of software is going to power my yet to be blog.  There are many solutions to the problem "I want to publish articles on the web", but this one is mine.  Besides solving this problem for me, γράφω serves as a test subject for the following:
+γράφω is Greek for "I write".  This piece of software is going to power my yet to be blog.  There are many solutions to the problem "I want to publish articles on the web", but this one is mine.  Besides solving this problem for me, γράφω serves as a test subject for the following:
 
 - deploying and monitoring a side-project in production: haven't done this yet and it is about time.
 - [Domain Events][domain-events] / [Event Sourcing][event-sourcing]: promise me the following:
