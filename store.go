@@ -112,7 +112,6 @@ func (self *EventsOnDisk) View() (EventView, error) {
 type DiskView struct {
 	in        *os.File
 	maxOffset int64
-	dec       *json.Decoder
 }
 
 func NewDiskView(maxOffset int64, filename string) (*DiskView, error) {
@@ -121,9 +120,7 @@ func NewDiskView(maxOffset int64, filename string) (*DiskView, error) {
 		return nil, err
 	}
 
-	dec := json.NewDecoder(file)
-
-	return &DiskView{file, maxOffset, dec}, nil
+	return &DiskView{file, maxOffset}, nil
 }
 
 func (self *DiskView) currentOffset() (int64, error) {
@@ -138,24 +135,20 @@ func (self *DiskView) Close() error {
 	return self.in.Close()
 }
 
-func (self *DiskView) readNext(dst *StoredEvent) (int64, error) {
-	if err := self.dec.Decode(dst); err != nil {
-		return -1, err
-	}
-
-	return self.currentOffset()
-}
-
 func (self *DiskView) ForEach(fn func(Event) error) error {
-	n, err := self.rewind()
+	_, err := self.rewind()
 	if err != nil {
 		return err
 	}
 
-	envelope := StoredEvent{}
-	for n <= self.maxOffset {
-		log.Printf("n=%d/%d\n", n, self.maxOffset)
-		n, err = self.readNext(&envelope)
+	dec := json.NewDecoder(io.LimitReader(self.in, self.maxOffset))
+
+	for {
+		envelope := StoredEvent{}
+		err := dec.Decode(&envelope)
+		if err == io.EOF {
+			return nil
+		}
 		if err != nil {
 			return err
 		}
