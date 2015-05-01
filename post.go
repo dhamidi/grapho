@@ -10,6 +10,9 @@ type PostDraftedEvent struct {
 	Body  string
 }
 
+func (self *PostDraftedEvent) EventType() string { return "post/drafted" }
+func init()                                      { RegisterEvent(&PostDraftedEvent{}) }
+
 func (self *Post) Draft(slug, title, body string) (Events, error) {
 	return Events{
 		&PostDraftedEvent{
