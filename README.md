@@ -19,6 +19,21 @@
 - Authentication / authorization is left to the protocol layer.
 - User-generated content (e.g. comments) requires approval before being published.
 
+# Implementation infrastructure
+
+- [X] Persistent events
+- [ ] Views
+  - Views are read-optimized data structures that react to domain events 
+  - Possible views for γράφω:
+    - static HTML pages
+    - JSON files for API responses
+    - RSS feed
+    - a SQL database
+- [ ] Application service
+  - entry point to the system
+  - orchestrates objects
+  - contains the wiring for events
+
 # Use cases
 
 - [ ] M1 Draft post
