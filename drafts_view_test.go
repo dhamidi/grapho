@@ -1,6 +1,9 @@
 package grapho
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func Test_DraftsView_AddsDraft(t *testing.T) {
 	event := &PostDraftedEvent{
@@ -29,5 +32,29 @@ func Test_DraftsView_ReturnsErrNotFound_WhenDraftDoesNotExist(t *testing.T) {
 	_, err := view.Show("does-not-exist")
 	if err != ErrNotFound {
 		t.Fatalf("err = %#v; want %s", err, ErrNotFound)
+	}
+}
+
+func Test_DraftsView_ListsAllDrafts_InAlphabeticalOrder_ById(t *testing.T) {
+	ids := []string{"b", "c", "a"}
+	view := NewAllDraftsView()
+	for i, id := range ids {
+		if err := view.HandleEvent(&PostDraftedEvent{
+			Id:    id,
+			Title: fmt.Sprintf("draft-%d", i),
+			Body:  "body",
+		}); err != nil {
+			t.Error(err)
+		}
+	}
+
+	drafts, err := view.List()
+	if err != nil {
+		t.Error(err)
+	}
+	for i, want := range []string{"a", "b", "c"} {
+		if got := drafts[i].Id; got != want {
+			t.Errorf("drafts[%d].Id = %q; want %q", i, got, want)
+		}
 	}
 }
