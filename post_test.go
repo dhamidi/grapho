@@ -3,16 +3,24 @@ package grapho
 import (
 	"bytes"
 	"testing"
+	"time"
 )
 
 func Test_Post_Draft_succeeds(t *testing.T) {
 	subject := NewPost()
-	events, err := subject.Draft("slug", "hello world", "Post\nbody\n")
+	now := time.Now()
+	events, err := subject.Draft(&DraftPostCommand{
+		PostId: "slug",
+		Title:  "hello world",
+		Body:   "Post\nbody\n",
+		Now:    now,
+	})
 	expected := Events{
 		&PostDraftedEvent{
-			Id:    "slug",
-			Title: "hello world",
-			Body:  "Post\nbody\n",
+			Id:        "slug",
+			Title:     "hello world",
+			Body:      "Post\nbody\n",
+			DraftedAt: now,
 		},
 	}
 

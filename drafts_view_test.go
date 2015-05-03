@@ -3,6 +3,7 @@ package grapho
 import (
 	"fmt"
 	"testing"
+	"time"
 )
 
 func Test_DraftsView_AddsDraft(t *testing.T) {
@@ -56,5 +57,27 @@ func Test_DraftsView_ListsAllDrafts_InAlphabeticalOrder_ById(t *testing.T) {
 		if got := drafts[i].Id; got != want {
 			t.Errorf("drafts[%d].Id = %q; want %q", i, got, want)
 		}
+	}
+}
+
+func Test_DraftsView_Draft_TracksDateDraftedAt(t *testing.T) {
+	now := time.Now()
+	event := &PostDraftedEvent{
+		Id:        "slug",
+		Title:     "A post",
+		Body:      "yeah",
+		DraftedAt: now,
+	}
+	view := NewAllDraftsView()
+	if err := view.HandleEvent(event); err != nil {
+		t.Error(err)
+	}
+
+	draft, err := view.Show("slug")
+	if err != nil {
+		t.Error(err)
+	}
+	if got := draft.DraftedAt; !got.Equal(now) {
+		t.Errorf("draft.DraftedAt = %q; want %q", got, now)
 	}
 }

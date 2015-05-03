@@ -48,8 +48,16 @@ func Test_Store_ReplayFunc_onlySeesSnapshot(t *testing.T) {
 	storage := backend()
 	store := NewEventStore(storage)
 	events := Events{
-		&PostDraftedEvent{"slug-1", "title", "body"},
-		&PostDraftedEvent{"slug-2", "title", "body"},
+		&PostDraftedEvent{
+			Id:    "slug-1",
+			Title: "title",
+			Body:  "body",
+		},
+		&PostDraftedEvent{
+			Id:    "slug-2",
+			Title: "title",
+			Body:  "body",
+		},
 	}
 	if err := store.Store(events); err != nil {
 		t.Fatal(err)
@@ -62,7 +70,11 @@ func Test_Store_ReplayFunc_onlySeesSnapshot(t *testing.T) {
 	defer view.Close()
 
 	shouldNotShowUp := Events{
-		&PostDraftedEvent{"slug-3", "title", "body"},
+		&PostDraftedEvent{
+			Id:    "slug-3",
+			Title: "title",
+			Body:  "body",
+		},
 	}
 
 	if err := store.Store(shouldNotShowUp); err != nil {

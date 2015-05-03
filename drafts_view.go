@@ -1,14 +1,19 @@
 package grapho
 
-import "sort"
+import (
+	"sort"
+	"time"
+)
 
 type Draft struct {
-	Id string
+	Id        string
+	DraftedAt time.Time
 }
 
 func (self *Draft) fromEvent(event *PostDraftedEvent) *Draft {
 	return &Draft{
-		Id: event.Id,
+		Id:        event.Id,
+		DraftedAt: event.DraftedAt,
 	}
 }
 
