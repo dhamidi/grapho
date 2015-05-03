@@ -23,3 +23,11 @@ func Test_DraftsView_AddsDraft(t *testing.T) {
 		t.Fatalf("Draft %q not found", "slug")
 	}
 }
+
+func Test_DraftsView_ReturnsErrNotFound_WhenDraftDoesNotExist(t *testing.T) {
+	view := NewAllDraftsView()
+	_, err := view.Show("does-not-exist")
+	if err != ErrNotFound {
+		t.Fatalf("err = %#v; want %s", err, ErrNotFound)
+	}
+}
