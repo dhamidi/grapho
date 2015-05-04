@@ -55,6 +55,10 @@ func (self *EventStore) Store(events Events) error {
 	return tx.Commit()
 }
 
+func (self *EventStore) Close() error {
+	return self.storage.Close()
+}
+
 func (self *EventStore) ReplayFunc(fn func(Event) error) error {
 	view, err := self.storage.View()
 	if err != nil {
@@ -68,6 +72,7 @@ func (self *EventStore) ReplayFunc(fn func(Event) error) error {
 type EventStorage interface {
 	Begin() EventTransaction
 	View() (EventView, error)
+	Close() error
 }
 
 type EventTransaction interface {
@@ -91,6 +96,10 @@ func NewEventsOnDisk(filename string) (EventStorage, error) {
 	if err != nil {
 		return nil, err
 	}
+	_, err = logFile.Seek(0, 2)
+	if err != nil {
+		return nil, err
+	}
 
 	return &EventsOnDisk{logFile: logFile}, nil
 }
@@ -98,6 +107,10 @@ func NewEventsOnDisk(filename string) (EventStorage, error) {
 func (self *EventsOnDisk) Begin() EventTransaction {
 	commitTo := self.logFile
 	return NewDiskTransaction(commitTo)
+}
+
+func (self *EventsOnDisk) Close() error {
+	return self.logFile.Close()
 }
 
 func (self *EventsOnDisk) View() (EventView, error) {

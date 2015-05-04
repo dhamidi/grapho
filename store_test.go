@@ -93,3 +93,42 @@ func Test_Store_ReplayFunc_onlySeesSnapshot(t *testing.T) {
 		t.Fatalf("len(events) = %d; want %d", count, want)
 	}
 }
+
+func Test_Store_IsPersistent(t *testing.T) {
+	storage := backend()
+	store := NewEventStore(storage)
+	events := Events{
+		&PostDraftedEvent{
+			Id:    "slug-1",
+			Title: "title",
+			Body:  "body",
+		},
+		&PostDraftedEvent{
+			Id:    "slug-2",
+			Title: "title",
+			Body:  "body",
+		},
+	}
+	if err := store.Store(events); err != nil {
+		t.Fatal(err)
+	}
+
+	store.Close()
+
+	onDisk, err := NewEventsOnDisk("_test/events.log")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	store = NewEventStore(onDisk)
+	count := 0
+	counter := func(Event) error { count++; return nil }
+
+	if err := store.ReplayFunc(counter); err != nil {
+		t.Fatal(err)
+	}
+
+	if want := len(events); count != want {
+		t.Errorf("count = %d; want = %d", count, want)
+	}
+}
