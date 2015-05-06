@@ -81,3 +81,49 @@ func Test_DraftsView_Draft_TracksDateDraftedAt(t *testing.T) {
 		t.Errorf("draft.DraftedAt = %q; want %q", got, now)
 	}
 }
+
+func Test_DraftsView_Draft_TracksDraftTitle(t *testing.T) {
+	now := time.Now()
+	event := &PostDraftedEvent{
+		Id:        "slug",
+		Title:     "A post",
+		Body:      "yeah",
+		DraftedAt: now,
+	}
+	view := NewAllDraftsView()
+	if err := view.HandleEvent(event); err != nil {
+		t.Error(err)
+	}
+
+	draft, err := view.Show("slug")
+	if err != nil {
+		t.Error(err)
+	}
+	if got, want := draft.Title, "A post"; got != want {
+		t.Errorf("draft.DraftedAt = %q; want %q", got, want)
+	}
+
+}
+
+func Test_DraftsView_Draft_TracksDraftBody(t *testing.T) {
+	now := time.Now()
+	event := &PostDraftedEvent{
+		Id:        "slug",
+		Title:     "A post",
+		Body:      "yeah",
+		DraftedAt: now,
+	}
+	view := NewAllDraftsView()
+	if err := view.HandleEvent(event); err != nil {
+		t.Error(err)
+	}
+
+	draft, err := view.Show("slug")
+	if err != nil {
+		t.Error(err)
+	}
+	if got, want := draft.Body, "yeah"; got != want {
+		t.Errorf("draft.DraftedAt = %q; want %q", got, want)
+	}
+
+}

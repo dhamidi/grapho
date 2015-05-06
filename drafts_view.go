@@ -7,12 +7,16 @@ import (
 
 type Draft struct {
 	Id        string
+	Title     string
+	Body      string
 	DraftedAt time.Time
 }
 
 func (self *Draft) fromEvent(event *PostDraftedEvent) *Draft {
 	return &Draft{
 		Id:        event.Id,
+		Title:     event.Title,
+		Body:      event.Body,
 		DraftedAt: event.DraftedAt,
 	}
 }
