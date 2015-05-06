@@ -60,6 +60,29 @@ func Test_DraftsView_ListsAllDrafts_InAlphabeticalOrder_ById(t *testing.T) {
 	}
 }
 
+func Test_DraftsView_ListsAllDrafts_WithoutDuplicates(t *testing.T) {
+	ids := []string{"b", "b"}
+	view := NewAllDraftsView()
+	for i, id := range ids {
+		if err := view.HandleEvent(&PostDraftedEvent{
+			Id:    id,
+			Title: fmt.Sprintf("draft-%d", i),
+			Body:  "body",
+		}); err != nil {
+			t.Error(err)
+		}
+	}
+
+	drafts, err := view.List()
+	if err != nil {
+		t.Error(err)
+	}
+
+	if got, want := len(drafts), 1; got != want {
+		t.Errorf("len(drafts) = %d; want %d", got, want)
+	}
+}
+
 func Test_DraftsView_Draft_TracksDateDraftedAt(t *testing.T) {
 	now := time.Now()
 	event := &PostDraftedEvent{
