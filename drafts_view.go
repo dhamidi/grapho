@@ -34,7 +34,8 @@ type AllDraftsView struct {
 
 func NewAllDraftsView() *AllDraftsView {
 	return &AllDraftsView{
-		byId: map[string]*Draft{},
+		byId:  map[string]*Draft{},
+		index: DraftsById{},
 	}
 }
 
@@ -61,7 +62,13 @@ func (self *AllDraftsView) Show(id string) (*Draft, error) {
 }
 
 func (self *AllDraftsView) putDraft(draft *Draft) {
-	self.byId[draft.Id] = draft
-	self.index = append(self.index, draft)
+	found := self.byId[draft.Id]
+	if found != nil {
+		*found = *draft
+	} else {
+		self.byId[draft.Id] = draft
+		self.index = append(self.index, draft)
+	}
+
 	sort.Sort(self.index)
 }
