@@ -1,36 +1,27 @@
 package grapho
 
-import (
-	"log"
-	"os"
-)
+import "log"
 
 type Grapho struct {
+	config        *Config
 	store         *EventStore
 	listeners     []EventHandler
 	allDraftsView *AllDraftsView
 }
 
-func NewGrapho() *Grapho {
-	result := &Grapho{}
+func NewGrapho(env string) *Grapho {
+	result := &Grapho{
+		config: Configurations[env],
+	}
 	result.setupStore()
 	result.setupListeners()
 	return result
 }
 
 func (self *Grapho) setupStore() {
-	logfile := os.Getenv("GRAPHO_LOG_FILE")
-	if logfile == "" {
-		logfile = "grapho.log"
-	}
-
-	backend, err := NewEventsOnDisk(logfile)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	self.store = NewEventStore(backend)
+	self.store = NewEventStore(self.config.Storage())
 }
+
 func (self *Grapho) setupListeners() {
 	self.allDraftsView = NewAllDraftsView()
 	self.listeners = []EventHandler{

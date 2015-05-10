@@ -6,7 +6,7 @@ import (
 )
 
 func Test_Grapho_DraftPost_DraftCanBeShown(t *testing.T) {
-	app := NewGrapho()
+	app := NewGrapho(getenv("GRAPHO_ENV", "test"))
 	now := time.Now()
 	app.DraftPost(&DraftPostCommand{
 		PostId: "test-id",
@@ -26,7 +26,7 @@ func Test_Grapho_DraftPost_DraftCanBeShown(t *testing.T) {
 }
 
 func Test_Grapho_DraftPost_DraftCanBeListed(t *testing.T) {
-	app := NewGrapho()
+	app := NewGrapho(getenv("GRAPHO_ENV", "test"))
 	now := time.Now()
 	app.DraftPost(&DraftPostCommand{
 		PostId: "test-id",
