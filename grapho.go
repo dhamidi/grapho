@@ -29,10 +29,17 @@ func (self *Grapho) setupListeners() {
 	}
 }
 
-func (self *Grapho) DraftPost(cmd *DraftPostCommand) {
+func (self *Grapho) DraftPost(cmd *DraftPostCommand) error {
 	post := NewPost()
-	events, _ := post.Draft(cmd)
+	events, err := post.Draft(cmd)
+
+	if err != nil {
+		return err
+	}
+
 	self.handleEvents(events)
+
+	return nil
 }
 
 func (self *Grapho) ShowDraft(draftId string) (*Draft, error) {
