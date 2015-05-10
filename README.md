@@ -51,7 +51,7 @@
 
 # Running
 
-γραφώ is not ready for production yet, so there is no binary to
+γράφω is not ready for production yet, so there is no binary to
 install yet.  If you want to run it in the current development state
 you can do so with the following commands:
 
