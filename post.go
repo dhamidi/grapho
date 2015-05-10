@@ -17,7 +17,7 @@ func (self *PostDraftedEvent) EventType() string { return "post/drafted" }
 func init()                                      { RegisterEvent(&PostDraftedEvent{}) }
 
 type DraftPostCommand struct {
-	PostId string
+	PostId PostId
 	Title  string
 	Body   string
 	Now    time.Time
@@ -26,7 +26,7 @@ type DraftPostCommand struct {
 func (self *Post) Draft(params *DraftPostCommand) (Events, error) {
 	return Events{
 		&PostDraftedEvent{
-			Id:        params.PostId,
+			Id:        params.PostId.String(),
 			Title:     params.Title,
 			Body:      params.Body,
 			DraftedAt: params.Now,
