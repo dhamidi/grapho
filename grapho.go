@@ -27,6 +27,11 @@ func (self *Grapho) setupListeners() {
 	self.listeners = []EventHandler{
 		self.allDraftsView,
 	}
+
+	self.store.ReplayFunc(func(e Event) error {
+		self.allDraftsView.HandleEvent(e)
+		return nil
+	})
 }
 
 func (self *Grapho) DraftPost(cmd *DraftPostCommand) error {
