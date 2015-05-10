@@ -22,22 +22,22 @@
 # Implementation infrastructure
 
 - [X] Persistent events
-- [ ] Views
+- [X] Views
   - Views are read-optimized data structures that react to domain events 
   - Possible views for γράφω:
     - static HTML pages
     - JSON files for API responses
     - RSS feed
     - a SQL database
-- [ ] Application service
+- [X] Application service
   - entry point to the system
   - orchestrates objects
   - contains the wiring for events
 
 # Use cases
 
-- [ ] M1 Draft post
-- [ ] M1 List drafts
+- [X] M1 Draft post
+- [X] M1 List drafts
 - [ ] M1 Publish post 
 - [ ] M1 List all posts
 - [ ] M1 Show post
@@ -48,6 +48,21 @@
 [domain-events]: http://martinfowler.com/eaaDev/DomainEvent.html
 [event-sourcing]: http://martinfowler.com/eaaDev/EventSourcing.html
 [nodb]: http://blog.8thlight.com/uncle-bob/2012/05/15/NODB.html
+
+# Running
+
+γραφώ is not ready for production yet, so there is no binary to
+install yet.  If you want to run it in the current development state
+you can do so with the following commands:
+
+```sh
+go get github.com/dhamidi/grapho/...
+go install github.com/dhamidi/grapho/...
+GRAPHO_ENV=development grapho-web
+```
+
+The server listens on port 8080.  Check [the
+source](./cmd/grapho-web/main.go) for available routes.
 
 # LICENSE
 
