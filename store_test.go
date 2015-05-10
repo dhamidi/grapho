@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func backend() EventStorage {
+func diskBackend() EventStorage {
 	os.Remove("_test/events.log")
 	onDisk, err := NewEventsOnDisk("_test/events.log")
 	if err != nil {
@@ -15,6 +15,13 @@ func backend() EventStorage {
 
 	return onDisk
 }
+
+func memoryBackend() EventStorage {
+	result, _ := NewEventsInMemory()
+	return result
+}
+
+var backend = diskBackend
 
 func Test_Store_StoresEvents(t *testing.T) {
 	store := NewEventStore(backend())
@@ -130,5 +137,20 @@ func Test_Store_IsPersistent(t *testing.T) {
 
 	if want := len(events); count != want {
 		t.Errorf("count = %d; want = %d", count, want)
+	}
+}
+
+func TestMain(m *testing.M) {
+	log.Printf("EventsOnDisk")
+	backend = diskBackend
+	failed := m.Run() != 0
+	log.Printf("EventsInMemory")
+	backend = memoryBackend
+	failed = failed || m.Run() != 0
+
+	if failed {
+		os.Exit(1)
+	} else {
+		os.Exit(0)
 	}
 }

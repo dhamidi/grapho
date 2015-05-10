@@ -86,6 +86,79 @@ type EventView interface {
 	Close() error
 }
 
+type EventsInMemory struct {
+	allEvents Events
+}
+
+func NewEventsInMemory() (EventStorage, error) {
+	return &EventsInMemory{
+		allEvents: Events{},
+	}, nil
+}
+
+func (self *EventsInMemory) Close() error { return nil }
+
+func (self *EventsInMemory) View() (EventView, error) {
+	return NewArrayIndexView(0, self.allEvents)
+}
+
+func (self *EventsInMemory) Begin() EventTransaction {
+	return NewInMemoryTransaction(func(events Events) error {
+		self.allEvents = append(self.allEvents, events...)
+		return nil
+	})
+}
+
+type InMemoryTransaction struct {
+	events Events
+	commit func(Events) error
+}
+
+func NewInMemoryTransaction(commit func(Events) error) *InMemoryTransaction {
+	return &InMemoryTransaction{
+		events: Events{},
+		commit: commit,
+	}
+}
+
+func (self *InMemoryTransaction) Commit() error {
+	return self.commit(self.events)
+}
+
+func (self *InMemoryTransaction) Rollback() {
+	self.events = Events{}
+}
+
+func (self *InMemoryTransaction) Add(event Event) {
+	self.events = append(self.events, event)
+}
+
+type ArrayIndexView struct {
+	events Events
+	min    int
+	max    int
+}
+
+func NewArrayIndexView(min int, events Events) (*ArrayIndexView, error) {
+	return &ArrayIndexView{
+		events: events,
+		min:    min,
+		max:    len(events),
+	}, nil
+}
+
+func (self *ArrayIndexView) ForEach(fn func(Event) error) error {
+	for i := self.min; i < self.max; i++ {
+		if err := fn(self.events[i]); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (self *ArrayIndexView) Close() error { return nil }
+
 type EventsOnDisk struct {
 	logFile *os.File
 }
